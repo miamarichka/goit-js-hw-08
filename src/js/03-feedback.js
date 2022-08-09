@@ -1,35 +1,34 @@
 import throttle from 'lodash.throttle';
 
-const feedBackFormRef = document.querySelector('.feedback-form');
-const emailRef = feedBackFormRef.elements.email;
-const messageRef = feedBackFormRef.elements.message;
+const feedBackForm = document.querySelector('.feedback-form');
+const emailInput = feedBackForm.elements.email;
+const messageInput = feedBackForm.elements.message;
 const formData = {};
-const KEYMSG = '"message';
+const STORAGE_KEY = 'message';
 
-feedBackFormRef.addEventListener('input', throttle(onFormInput, 500));
 
-feedBackFormRef.addEventListener('submit', onFormSubmit);
+feedBackForm.addEventListener('input', throttle(onFormInput, 500));
+feedBackForm.addEventListener('submit', onFormSubmit);
 
 getLocaleStorageData();
-
-setformData();
-
 function getLocaleStorageData() {
-  if (localStorage.getItem(KEYMSG)) {
-    const storageData = JSON.parse(localStorage.getItem(KEYMSG));
-    emailRef.value = storageData.email;
-    messageRef.value = storageData.message;
+  if (localStorage.getItem(STORAGE_KEY)) {
+    const storageData = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    console.log(storageData)
+    emailInput.value = storageData.email;
+    messageInput.value = storageData.message;
   }
 }
 
+setformData();
 function setformData() {
-  formData.email = emailRef.value;
-  formData.message = messageRef.value;
+  formData.email = emailInput.value;
+  formData.message = messageInput.value;
 }
 
 function onFormInput(e) {
   formData[e.target.name] = e.target.value;
-  localStorage.setItem(KEYMSG, JSON.stringify(formData));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
 }
 
 function onFormSubmit(e) {
@@ -38,7 +37,7 @@ function onFormSubmit(e) {
     console.log(formData);
 
     e.currentTarget.reset();
-    localStorage.removeItem(KEYMSG);
+    localStorage.removeItem(STORAGE_KEY);
     setformData();
   }
 }
