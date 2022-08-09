@@ -1,32 +1,44 @@
-const email = document.querySelector('input');
-const textarea = document.querySelector('textarea')
-const submit = document.querySelector('button')
+import throttle from 'lodash.throttle';
 
-email.addEventListener('input', onEmail);
-textarea.addEventListener('input', onTextarea);
-submit.addEventListener('submit', onSubmitBtn);
+const feedBackFormRef = document.querySelector('.feedback-form');
+const emailRef = feedBackFormRef.elements.email;
+const messageRef = feedBackFormRef.elements.message;
+const formData = {};
+const KEYMSG = '"message';
 
-function onEmail(event){
-    const emailadress = event.target.value;
-    console.log(emailadress)
-    localStorage.setItem('email' , emailadress);
-};
+feedBackFormRef.addEventListener('input', throttle(onFormInput, 500));
 
- function onTextarea(event){
-    const textareainput = event.target.value;
-    console.log(textareainput)
-    localStorage.setItem('textarea' , textareainput);
-};
+feedBackFormRef.addEventListener('submit', onFormSubmit);
 
-function restore(){
-    const savedEmail = localStorage.getItem('email');
-    const savedTextarea = localStorage.getItem('textarea');
+getLocaleStorageData();
 
-    if(savedEmail){
-        email.value = savedEmail;
-    };
-    if(savedTextarea){
-        textarea.value = savedTextarea;
-    }
+setformData();
+
+function getLocaleStorageData() {
+  if (localStorage.getItem(KEYMSG)) {
+    const storageData = JSON.parse(localStorage.getItem(KEYMSG));
+    emailRef.value = storageData.email;
+    messageRef.value = storageData.message;
+  }
 }
 
+function setformData() {
+  formData.email = emailRef.value;
+  formData.message = messageRef.value;
+}
+
+function onFormInput(e) {
+  formData[e.target.name] = e.target.value;
+  localStorage.setItem(KEYMSG, JSON.stringify(formData));
+}
+
+function onFormSubmit(e) {
+  e.preventDefault();
+  if (formData.email !== '' && formData.message !== '') {
+    console.log(formData);
+
+    e.currentTarget.reset();
+    localStorage.removeItem(KEYMSG);
+    setformData();
+  }
+}
