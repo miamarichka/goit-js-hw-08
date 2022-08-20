@@ -1,29 +1,32 @@
 import throttle from 'lodash.throttle';
 
+const STORAGE_KEY = 'message';
+
 const feedBackForm = document.querySelector('.feedback-form');
 const emailInput = feedBackForm.elements.email;
 const messageInput = feedBackForm.elements.message;
-const formData = {};
-const STORAGE_KEY = 'message';
 
+const storageData = JSON.parse(localStorage.getItem(STORAGE_KEY))
+let formData = storageData || {};
 
 feedBackForm.addEventListener('input', throttle(onFormInput, 500));
+feedBackForm.addEventListener('input', onFormInput);
 feedBackForm.addEventListener('submit', onFormSubmit);
 
 getLocaleStorageData();
-function getLocaleStorageData() {
-  if (localStorage.getItem(STORAGE_KEY)) {
-    const storageData = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    console.log(storageData)
-    emailInput.value = storageData.email;
-    messageInput.value = storageData.message;
-  }
-}
 
-setformData();
-function setformData() {
-  formData.email = emailInput.value;
-  formData.message = messageInput.value;
+function getLocaleStorageData() {
+  if (storageData) {
+    formData = storageData;
+  }
+
+  if (formData.email) {
+    emailInput.value = formData.email;
+  }
+
+  if (formData.message) {
+    messageInput.value = formData.message;
+  }
 }
 
 function onFormInput(e) {
@@ -38,6 +41,5 @@ function onFormSubmit(e) {
 
     e.currentTarget.reset();
     localStorage.removeItem(STORAGE_KEY);
-    setformData();
   }
 }

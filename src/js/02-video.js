@@ -1,14 +1,15 @@
 import VimeoPlayer from '@vimeo/player';
 import throttle from 'lodash.throttle';
 
+const LOCAL_STORAGE_KEY = 'videoplayer-current-time'
 const iframe = document.querySelector('iframe');
 const player = new VimeoPlayer(iframe);
 
 
 //розпарсити дані зі сховища
-const itemFromStorage = localStorage.getItem('videoplayer-current-time') || '0';
+const itemFromStorage = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '0');
 
-let currentTime = JSON.parse(itemFromStorage);
+// let currentTime = JSON.parse(itemFromStorage);
 
 // try {
 //     currentTime = JSON.parse(itemFromStorage);
@@ -18,12 +19,11 @@ let currentTime = JSON.parse(itemFromStorage);
 //  }
 
 //відновити програвання з місця зупинки
-player.setCurrentTime(currentTime);
+player.setCurrentTime(itemFromStorage);
 
 //фунція що кладе дані в сховище
 function setLocalstorage ({seconds}) {
-    console.log(seconds)
-    localStorage.setItem('videoplayer-current-time', seconds);
+    localStorage.setItem(LOCAL_STORAGE_KEY, seconds);
 };
 //оновлює час програвання 
 player.on('timeupdate', throttle(setLocalstorage, 1000));
